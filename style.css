@@ -1,3 +1,102 @@
-#root {
+/* <link href="//fonts.googleapis.com/css?family=Poppins:400,500,300" rel="stylesheet" type="text/css" /> */
+
+/* #root {
   color: red;
+} */
+/* Reset styles */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Base styles */
+body {
+  background-color: #f2f2f2;
+  font-family: sans-serif;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+h1 {
+  font-size: 36px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.card {
+  background-color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+
+.card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.card h2 {
+  font-size: 24px;
+  font-weight: 700;
+  margin: 20px;
+}
+
+.card p {
+  font-size: 16px;
+  line-height: 1.5;
+  margin: 20px;
+}
+
+.card a {
+  display: inline-block;
+  padding: 10px;
+  background-color: #0077ff;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 5px;
+  margin: 20px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.card a:hover {
+  background-color: #005ae6;
+}
+
+/* Footer styles */
+footer {
+  background-color: #333;
+  color: #fff;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  margin-top: 20px;
+}
+
+footer div:first-of-type {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+footer div:last-of-type {
+  font-size: 12px;
+}
+
+footer a {
+  color: #fff;
+  text-decoration: none;
+  transition: color 0.2s ease-in-out;
+}
+
+footer a:hover {
+  color: #ccc;
 }
