@@ -1,9 +1,3 @@
-/* <link href="//fonts.googleapis.com/css?family=Poppins:400,500,300" rel="stylesheet" type="text/css" /> */
-
-/* #root {
-  color: red;
-} */
-
 * {
   box-sizing: border-box;
   margin: 0;
@@ -12,14 +6,9 @@
 
 /* Base styles */
 body {
-  background-color: #f2f2f2;
+  background-color: #000;
   font-family: "Poppins", sans-serif;
-}
-
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  margin: 20px;
 }
 
 h1 {
@@ -28,35 +17,39 @@ h1 {
   margin-bottom: 20px;
 }
 
-.card {
+.episode {
+  border: 1px solid #ccc;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.8);
+
+  width: 450px;
+  height: 500px;
+  margin: 8px auto;
+
   background-color: #fff;
   border-radius: 5px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  margin-bottom: 20px;
+  position: relative;
 }
 
-.card img {
-  display: block;
+.episode img {
   width: 100%;
-  height: auto;
-  object-fit: cover;
-  border-top-left-radius: 5px;
-  border-top-right-radius: 5px;
+  align-self: flex-end;
 }
 
-.card h2 {
+.episode h2 {
   font-size: 24px;
   font-weight: 700;
   margin: 20px;
 }
 
-.card p {
+.episode p {
   font-size: 16px;
   line-height: 1.5;
-  margin: 20px;
+  margin: 10px;
 }
 
-.card a {
+.episode a {
   display: inline-block;
   padding: 10px;
   background-color: #0077ff;
@@ -67,19 +60,20 @@ h1 {
   transition: background-color 0.2s ease-in-out;
 }
 
-.card a:hover {
+.episode a:hover {
   background-color: #005ae6;
 }
 
 /* Footer styles */
 footer {
-  background-color: #333;
+  background-color: #000;
   color: #fff;
-  display: flex;
   justify-content: space-between;
-  align-items: center;
   padding: 20px;
   margin-top: 20px;
+  margin-bottom: 30px;
+
+  text-align: center;
 }
 
 footer div:first-of-type {
@@ -88,7 +82,7 @@ footer div:first-of-type {
 }
 
 footer div:last-of-type {
-  font-size: 12px;
+  font-size: 14px;
 }
 
 footer a {
@@ -99,4 +93,39 @@ footer a {
 
 footer a:hover {
   color: #ccc;
+}
+
+/* Styles for the search bar */
+#searchBar,
+#dropdownSelect {
+  margin-left: 20px;
+  margin-top: 20px;
+  width: 30%;
+  padding: 10px;
+}
+
+/* Styles for the episodes flex container */
+.grid {
+  display: flex;
+
+  flex-flow: row wrap;
+
+  /* Then we define how is distributed the remaining space */
+  justify-content: space-around;
+}
+
+/* Styles for the pagination links */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.pagination a {
+  margin: 0 5px;
+  text-decoration: none;
+  color: blue;
 }
