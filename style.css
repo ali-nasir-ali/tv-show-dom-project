@@ -107,7 +107,8 @@ footer a:hover {
 
 /* Styles for the search bar */
 #searchBar,
-#dropdownSelect {
+#dropdownEpisodeSelect,
+#dropdownShowSelect {
   margin-left: 20px;
   margin-top: 20px;
   width: 30%;
