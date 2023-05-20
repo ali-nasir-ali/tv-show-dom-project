@@ -2,8 +2,10 @@ document.addEventListener("DOMContentLoaded", function () {
   // Get the root element
   var rootElement = document.getElementById("root");
 
-  ///////////////////////// BELOW IS NAV /////////////////////////
-  ///////////////////////////////////////////////////////////////
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //                                                                                                              BELOW IS NAV
+  //___________________________________________________________________________________________________________________________________________
+
   // Create the top bar
   var topBar = document.createElement("div");
   topBar.setAttribute("class", "top-bar");
@@ -38,18 +40,22 @@ document.addEventListener("DOMContentLoaded", function () {
   // Insert the top bar at the top of the root element
   rootElement.insertBefore(topBar, rootElement.firstChild);
 
-  ///////////////////////// ABOVE IS NAV /////////////////////////
-  ///////////////////////////////////////////////////////////////
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //                                                                                                          ABOVE IS NAV
+  //___________________________________________________________________________________________________________________________________________
+
   //
   //
   //
 
-  ///////////////////////// BELOW IS Fetching Data  //////////////
-  ///////////////////////////////////////////////////////////////
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //                                                                                                          BELOW IS Fetching Data
+  //___________________________________________________________________________________________________________________________________________
 
   //
   // Get all episodes from the episodes.js file
   var allEpisodes = getAllEpisodes();
+
   ///
   async function fetchAllSeasons(showId) {
     if (showId === "none") {
@@ -92,8 +98,9 @@ document.addEventListener("DOMContentLoaded", function () {
   //
   //
 
-  ///////////////////////// ABOVE IS Fetching Data ///////////////
-  ///////////////////////////////////////////////////////////////
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //                                                                                                          ABOVE IS Fetching Data
+  //___________________________________________________________________________________________________________________________________________
 
   //
   // Create a container for the episodes
@@ -148,7 +155,8 @@ document.addEventListener("DOMContentLoaded", function () {
   async function createDropdownShowSelect() {
     // Fetch shows data
 
-    const allShows = await fetchShows();
+    let allShows = await fetchShows();
+    allShows = allShows.sort((a, b) => a.name.localeCompare(b.name));
 
     var dropdownShowSelect = document.createElement("select");
     dropdownShowSelect.setAttribute("id", "dropdownShowSelect");
@@ -171,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function () {
       var selectedShowId = dropdownShowSelect.value;
 
       console.log("selectedShowId ", selectedShowId);
-      if (selectedShowId === "" || selectedEpisodeId === "All Shows") {
+      if (selectedShowId === "" || selectedShowId === "All Shows") {
         displayEpisodes(allEpisodes);
       } else {
         var selectedShow = allShows.find((show) => show.id === Number(selectedShowId));
@@ -187,9 +195,10 @@ document.addEventListener("DOMContentLoaded", function () {
     topBar.appendChild(dropdownShowSelect);
   });
 
-  ///////////////////////// BELOW IS FOOTER ///////////////////////
-  ////////////////////////////////////////////////////////////////
-  //
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //                                                                                                          BELOW IS FOOTER
+  //___________________________________________________________________________________________________________________________________________
+
   //
   //
   // Function to create the footer
@@ -221,18 +230,23 @@ document.addEventListener("DOMContentLoaded", function () {
   // Create the footer
   createFooter();
 
-  ///////////////////////// ABOVE IS FOOTER ///////////////////////
-  ////////////////////////////////////////////////////////////////
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //                                                                                                          ABOVE IS FOOTER
+  //___________________________________________________________________________________________________________________________________________
 
   ////
 
-  ////////////////// BELOW IS MAIN DISPLAY FUNCTION ///////////////
-  ////////////////////////////////////////////////////////////////
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //                                                                                                         BELOW IS MAIN DISPLAY FUNCTION
+  //___________________________________________________________________________________________________________________________________________
+
   //
   //
   //
   // Function to display episodes
   function displayEpisodes(episodes) {
+    //   fetchAllEpisodesData
+
     // Filter episodes based on search input
     var searchTerm = searchBar.value.toLowerCase();
     var filteredEpisodes = episodes.filter(function (episode) {
@@ -276,7 +290,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Create the episode season element
         var episodeSeason = document.createElement("h4");
-        episodeSeason.textContent = `S${episode.season.toString().padStart(2, "0")}E${episode.number.toString().padStart(2, "0")}`;
+        if (episode.season !== null && episode.season !== undefined) {
+          episodeSeason.textContent = `S${episode.season.toString().padStart(2, "0")}E${episode.number.toString().padStart(2, "0")}`;
+        }
         episodeContainer.appendChild(episodeSeason);
 
         // Create the episode name element
@@ -298,70 +314,14 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Append the episode container to the grid
         grid.appendChild(episodeContainer);
-        generatePagination(totalEpisodes);
       }
     }
 
     // Show the first page of episodes initially
     showEpisodes(currentPage);
-    generatePagination(totalPages);
-  }
-
-  //
-  //
-  //  displays Shows
-  // Function to display shows
-  function displayShows(shows) {
-    // Filter shows based on search input
-    var searchTerm = searchBar.value.toLowerCase();
-    var filteredShows = shows.filter(function (show) {
-      var showName = show.name.toLowerCase();
-      return showName.includes(searchTerm);
-    });
-
-    // Clear the previous shows
-    episodesContainer.innerHTML = "";
-
-    // Create grid for shows
-    var grid = document.createElement("div");
-    grid.setAttribute("class", "grid");
-    episodesContainer.appendChild(grid);
-
-    // Loop through the shows and create elements for each
-    filteredShows.forEach(function (show) {
-      // Create a container for each show
-      var showContainer = document.createElement("div");
-      showContainer.setAttribute("class", "show");
-
-      // Create the show name element
-      var showName = document.createElement("h3");
-      showName.textContent = show.name;
-      showContainer.appendChild(showName);
-
-      // Create the show image element
-      var showImage = document.createElement("img");
-      showImage.setAttribute("src", show.image.medium);
-      showContainer.appendChild(showImage);
-
-      // Append the show container to the grid
-      grid.appendChild(showContainer);
-    });
-
-    generatePagination(filteredShows.length);
-  }
-
-  //
-  //
-  //  pagination
-  function generatePagination(totalPages) {
-    // Clear the previous pagination links
-    var pagination = document.querySelector(".pagination");
-    if (pagination) {
-      pagination.parentNode.removeChild(pagination);
-    }
 
     // Create pagination links
-    pagination = document.createElement("div");
+    var pagination = document.createElement("div");
     pagination.setAttribute("class", "pagination");
     episodesContainer.appendChild(pagination);
 
@@ -390,8 +350,9 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   }
 
-  ////////////////// ABOVE IS MAIN DISPLAY FUNCTION ///////////////
-  ////////////////////////////////////////////////////////////////
+  //------------------------------------------------------------------------------------------------------------------------------------------
+  //                                                                                                          ABOVE IS MAIN DISPLAY FUNCTION
+  //___________________________________________________________________________________________________________________________________________
 
   // Event listener for search bar input for EPISODES
   searchBar.addEventListener("input", function () {
@@ -411,7 +372,8 @@ document.addEventListener("DOMContentLoaded", function () {
   // Fetch shows and display them
   fetchShows()
     .then(function (shows) {
-      displayShows(shows);
+      displayEpisodes(shows);
+      // displayShows(shows);
     })
     .catch(function (error) {
       console.error("Error fetching shows:", error);
@@ -420,3 +382,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // Display all episodes initially
   // displayEpisodes(allEpisodes);
 });
+
+//------------------------------------------------------------------------------------------------------------------------------------------
+//                                                                                                          END OF CODE
+//___________________________________________________________________________________________________________________________________________
