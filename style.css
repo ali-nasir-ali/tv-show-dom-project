@@ -188,3 +188,20 @@ select#show-select,
   width: 30%;
   padding: 10px;
 }
+
+/* testing pagination */
+/* Styles for the pagination links */
+#pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+
+  font-size: 16px;
+  font-weight: 700;
+}
+
+#pagination a {
+  margin: 0 5px;
+  text-decoration: none;
+  color: blue;
+}

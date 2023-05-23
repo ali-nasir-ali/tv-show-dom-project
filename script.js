@@ -174,39 +174,8 @@ document.addEventListener("DOMContentLoaded", function () {
   //                                                                                                          BELOW IS Pagination
   //___________________________________________________________________________________________________________________________________________
 
+  // Create pagination Element
   const ITEMS_PER_PAGE = 20;
-
-  const createPagination = (items, currentPage, totalPages, displayFunction) => {
-    const paginationContainer = document.createElement("div");
-    paginationContainer.className = "pagination";
-
-    const prevButton = createPaginationButton("Prev", currentPage - 1, totalPages, displayFunction);
-    const nextButton = createPaginationButton("Next", currentPage + 1, totalPages, displayFunction);
-
-    paginationContainer.appendChild(prevButton);
-    paginationContainer.appendChild(nextButton);
-
-    return paginationContainer;
-  };
-
-  const createPaginationButton = (text, page, totalPages, displayFunction) => {
-    const button = document.createElement("button");
-    button.textContent = text;
-
-    if (page < 1 || page > totalPages) {
-      button.disabled = true;
-    } else {
-      button.addEventListener("click", () => {
-        displayFunction(page);
-      });
-    }
-
-    return button;
-  };
-
-  //------------------------------------------------------------------------------------------------------------------------------------------
-  //                                                                                                          ABOVE IS Pagination
-  //___________________________________________________________________________________________________________________________________________
 
   function shortenText(text, lengthCap) {
     if (text.length > lengthCap) {
@@ -215,6 +184,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return text;
     }
   }
+
   //------------------------------------------------------------------------------------------------------------------------------------------
   //                                                                                                          BELOW IS Displaying Shows
   //___________________________________________________________________________________________________________________________________________
@@ -226,38 +196,46 @@ document.addEventListener("DOMContentLoaded", function () {
       episodesListing.innerHTML = "";
       // remove the back button
       rootElement.classList.remove("showResetButton");
+      // remove the old pagination
+      const paginationElement = document.getElementById("pagination");
+      paginationElement.remove();
       // remove episode search bar
       document.getElementById("searchInputEpisodes").style.display = "none";
       // display shows search bar
       document.getElementById("searchInputShows").style.display = "block";
     }
 
-    const showsListing = document.getElementById("showslisting");
-    if (!showsListing) {
-      const newShowsListing = document.createElement("div");
-      newShowsListing.id = "showslisting";
-      rootElement.appendChild(newShowsListing);
-    } else {
-      showsListing.innerHTML = "";
-    }
-
-    const startIndex = (page - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    const paginatedShows = shows.slice(startIndex, endIndex);
-
-    paginatedShows.forEach((show) => {
-      let imageCard = "";
-      try {
-        imageCard = show.image.medium;
-      } catch (err) {
-        imageCard = "https://static.tvmaze.com/images/no-img/no-img-portrait-text.png";
+    //
+    //
+    // Get the current page number
+    var currentPage = 1;
+    function showEpisodes(page) {
+      const showsListing = document.getElementById("showslisting");
+      if (!showsListing) {
+        const newShowsListing = document.createElement("div");
+        newShowsListing.id = "showslisting";
+        rootElement.appendChild(newShowsListing);
+      } else {
+        showsListing.innerHTML = "";
       }
 
-      showSummary = shortenText(show.summary, 200);
+      const startIndex = (page - 1) * ITEMS_PER_PAGE;
+      const endIndex = startIndex + ITEMS_PER_PAGE;
+      const paginatedShows = shows.slice(startIndex, endIndex);
 
-      const showCard = document.createElement("div");
-      showCard.className = "show-card";
-      showCard.innerHTML = `
+      paginatedShows.forEach((show) => {
+        let imageCard = "";
+        try {
+          imageCard = show.image.medium;
+        } catch (err) {
+          imageCard = "https://static.tvmaze.com/images/no-img/no-img-portrait-text.png";
+        }
+
+        showSummary = shortenText(show.summary, 200);
+
+        const showCard = document.createElement("div");
+        showCard.className = "show-card";
+        showCard.innerHTML = `
         <h2>${show.name}</h2 >
         <img src="${imageCard}" alt="${show.name}">
         <p>${showSummary}</p>
@@ -267,18 +245,44 @@ document.addEventListener("DOMContentLoaded", function () {
         <p>Runtime: ${show.runtime} minutes</p>
       `;
 
-      showCard.addEventListener("click", async () => {
-        const episodes = await fetchEpisodes(show.id);
-        createEpisodesDiv(episodes, 1);
-      });
+        showCard.addEventListener("click", async () => {
+          const episodes = await fetchEpisodes(show.id);
+          createEpisodesDiv(episodes, 1);
+        });
 
-      document.getElementById("showslisting").appendChild(showCard);
-    });
+        document.getElementById("showslisting").appendChild(showCard);
+      });
+    }
+
+    // Show the first page of episodes initially
+    showEpisodes(currentPage);
 
     const totalPages = Math.ceil(shows.length / ITEMS_PER_PAGE);
-    const pagination = createPagination(shows, page, totalPages, createShowDiv);
-    document.getElementById("showslisting").appendChild(pagination);
 
+    // Create pagination links
+    var pagination = document.createElement("div");
+    pagination.id = "pagination";
+    rootElement.appendChild(pagination);
+
+    // Generate pagination links
+    for (var pageNum = 1; pageNum <= totalPages; pageNum++) {
+      var pageLink = document.createElement("a");
+      pageLink.textContent = pageNum;
+      pageLink.setAttribute("href", "#");
+
+      pageLink.addEventListener(
+        "click",
+        (function (pageNum) {
+          return function (event) {
+            event.preventDefault();
+            showEpisodes(pageNum);
+          };
+        })(pageNum)
+      );
+      // display shows search bar
+      document.getElementById("pagination").style.color = "magenta";
+      pagination.appendChild(pageLink);
+    }
     showSelect.value = "";
   };
 
@@ -291,44 +295,62 @@ document.addEventListener("DOMContentLoaded", function () {
   //___________________________________________________________________________________________________________________________________________
 
   const createEpisodesDiv = (episodes, page) => {
-    // clear all the old display elements
-    showslisting.innerHTML = "";
-    // reset button is added
-    rootElement.classList.add("showResetButton");
-    // add episode search bar
-    document.getElementById("searchInputEpisodes").style.display = "block";
-    // if there are any episodes cards they would be removed
-    const showsSearchBar = document.getElementById("searchInputShows");
-    if (showsSearchBar) {
-      // remove episode search bar
-      document.getElementById("searchInputShows").style.display = "none";
+    try {
+      // clear all the old display elements
+      showslisting.innerHTML = "";
+      // reset button is added
+      rootElement.classList.add("showResetButton");
+      // add episode search bar
+      document.getElementById("searchInputEpisodes").style.display = "block";
+      // if there are any episodes cards they would be removed
+      const showsSearchBar = document.getElementById("searchInputShows");
+      if (showsSearchBar) {
+        // remove episode search bar
+        document.getElementById("searchInputShows").style.display = "none";
+      }
+
+      // remove the old pagination
+      const paginationElement = document.getElementById("pagination");
+      paginationElement.remove();
+
+      // if there are any shows cards they would be removed
+      const ifEpisodesListingExist = document.getElementById("episodeslisting");
+      if (ifEpisodesListingExist) {
+        episodeslisting.innerHTML = "";
+      }
+    } catch (err) {
+      console.log(err);
     }
     //
-    const episodesListing = document.getElementById("episodeslisting");
-    if (!episodesListing) {
-      const newEpisodesListing = document.createElement("div");
-      newEpisodesListing.id = "episodeslisting";
-      rootElement.appendChild(newEpisodesListing);
-    } else {
-      episodesListing.innerHTML = "";
-    }
-
-    const startIndex = (page - 1) * ITEMS_PER_PAGE;
-    const endIndex = startIndex + ITEMS_PER_PAGE;
-    const paginatedEpisodes = episodes.slice(startIndex, endIndex);
-
-    paginatedEpisodes.forEach((episode) => {
-      let imageCard = "";
-      try {
-        imageCard = episode.image.medium;
-      } catch (err) {
-        imageCard = "https://static.tvmaze.com/images/no-img/no-img-portrait-text.png";
+    //
+    // Get the current page number
+    var currentPage = 1;
+    function showEpisodes(page) {
+      const episodesListing = document.getElementById("episodeslisting");
+      if (!episodesListing) {
+        const newEpisodesListing = document.createElement("div");
+        newEpisodesListing.id = "episodeslisting";
+        rootElement.appendChild(newEpisodesListing);
+      } else {
+        episodesListing.innerHTML = "";
       }
-      elemSummary = shortenText(episode.summary, 200);
 
-      const episodeCard = document.createElement("div");
-      episodeCard.className = "episode-card";
-      episodeCard.innerHTML = `      
+      const startIndex = (page - 1) * ITEMS_PER_PAGE;
+      const endIndex = startIndex + ITEMS_PER_PAGE;
+      const paginatedEpisodes = episodes.slice(startIndex, endIndex);
+
+      paginatedEpisodes.forEach((episode) => {
+        let imageCard = "";
+        try {
+          imageCard = episode.image.medium;
+        } catch (err) {
+          imageCard = "https://static.tvmaze.com/images/no-img/no-img-portrait-text.png";
+        }
+        elemSummary = shortenText(episode.summary, 200);
+
+        const episodeCard = document.createElement("div");
+        episodeCard.className = "episode-card";
+        episodeCard.innerHTML = `      
         <h3>${episode.name}</h3>
         <p>S${episode.season.toString().padStart(2, "0")}E${episode.number.toString().padStart(2, "0")}</p>
         <img src="${imageCard}" alt="${episode.name}">
@@ -336,12 +358,38 @@ document.addEventListener("DOMContentLoaded", function () {
         <p>Airdate: ${episode.airdate}</p>
       `;
 
-      document.getElementById("episodeslisting").appendChild(episodeCard);
-    });
+        document.getElementById("episodeslisting").appendChild(episodeCard);
+      });
+    }
+
+    // Show the first page of episodes initially
+    showEpisodes(currentPage);
 
     const totalPages = Math.ceil(episodes.length / ITEMS_PER_PAGE);
-    const pagination = createPagination(episodes, page, totalPages, createEpisodesDiv);
-    document.getElementById("episodeslisting").appendChild(pagination);
+
+    // Create pagination links
+    var pagination = document.createElement("div");
+    pagination.id = "pagination";
+    rootElement.appendChild(pagination);
+
+    // Generate pagination links
+    for (var pageNum = 1; pageNum <= totalPages; pageNum++) {
+      var pageLink = document.createElement("a");
+      pageLink.textContent = pageNum;
+      pageLink.setAttribute("href", "#");
+      pageLink.addEventListener(
+        "click",
+        (function (pageNum) {
+          return function (event) {
+            event.preventDefault();
+            showEpisodes(pageNum);
+          };
+        })(pageNum)
+      );
+      // display shows search bar
+      document.getElementById("pagination").style.color = "magenta";
+      pagination.appendChild(pageLink);
+    }
   };
 
   //------------------------------------------------------------------------------------------------------------------------------------------
