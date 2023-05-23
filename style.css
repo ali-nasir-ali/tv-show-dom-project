@@ -158,6 +158,7 @@ mark {
 input#searchInputShows,
 input#searchInputEpisodes,
 select#show-select,
+select#episode-select,
 #resetSelectionButton {
   flex: 1;
   max-width: 49%;

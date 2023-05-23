@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
     searchInput.addEventListener("input", () => {
       const searchTerm = searchInput.value;
       const filteredShows = searchShows(searchTerm, allShows);
-      createShowDiv(filteredShows, showSelect, 1);
+      createShowDiv(filteredShows);
     });
 
     return searchInput;
@@ -75,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function () {
     searchInput.addEventListener("input", () => {
       const searchTerm = searchInput.value;
       const filteredShows = searchEpisode(searchTerm, currentEpisodes);
-      createEpisodesDiv(filteredShows, 1);
+      createEpisodesDiv(filteredShows);
     });
 
     return searchInput;
@@ -93,21 +93,128 @@ document.addEventListener("DOMContentLoaded", function () {
       const selectedShowId = parseInt(event.target.value);
       if (selectedShowId) {
         const episodes = await fetchEpisodes(selectedShowId);
-        createEpisodesDiv(episodes, 1);
+        createEpisodesDiv(episodes);
       } else {
-        createShowDiv(allShows, showSelect, 1);
+        createShowDiv(allShows);
       }
     });
 
     return showSelect;
   };
+  function formatSeriesNumber(number) {
+    return number < 10 ? "0" + number : number;
+  }
+  //
+  function createEpisodeSelect(allEpisodes) {
+    var dropdownEpisodeSelect = document.createElement("select");
+    dropdownEpisodeSelect.id = "episode-select";
+
+    // Add options to the dropdown select
+    var defaultOption = document.createElement("option");
+    defaultOption.textContent = "All Episodes";
+    dropdownEpisodeSelect.appendChild(defaultOption);
+
+    // Loop through each episode and create an option for it
+    allEpisodes.forEach(function (episode) {
+      var option = document.createElement("option");
+      console.log(`${formatSeriesNumber(episode.season)}E${formatSeriesNumber(episode.number)}`);
+      option.textContent = `S${episode.season}`;
+      option.value = episode.id; // Assuming each episode has a unique ID
+      option.innerHTML = `${episode.name} - S${formatSeriesNumber(episode.season)}E${formatSeriesNumber(episode.number)}`;
+      dropdownEpisodeSelect.appendChild(option);
+    });
+
+    // // Event listener for dropdown select change
+    // dropdownEpisodeSelect.addEventListener("change", function () {
+    //   var selectedEpisodeId = dropdownEpisodeSelect.value;
+    //   if (selectedEpisodeId === "" || selectedEpisodeId === "All Episodes") {
+    //     displayEpisodes(allEpisodes);
+    //   } else {
+    //     var selectedEpisode = allEpisodes.find((episode) => episode.id === Number(selectedEpisodeId));
+    //     displayEpisodes([selectedEpisode]);
+    //   }
+    // });
+
+    return dropdownEpisodeSelect;
+  }
+  // dropdown menu for Episodes
+  // const createEpisodeSelect = (episodes) => {
+  //   const episodeSelect = document.createElement("select");
+  //   episodeSelect.id = "episode-select";
+  //   episodeSelect.innerHTML = `<option value="">Select an Episode</option>`;
+  //   episodes.forEach((episode) => {
+  //     const option = document.createElement("option");
+  //     console.log(`${formatSeriesNumber(episode.season)}E${formatSeriesNumber(episode.number)}`);
+  //     const episodeNumber = `S${formatSeriesNumber(episode.season)}E${formatSeriesNumber(episode.number)}`;
+  //     option.value = episodeNumber;
+  //     option.textContent = `${episode.name} - ${episodeNumber}`;
+  //     episodeSelect.appendChild(option);
+  //   });
+
+  //   episodeSelect.addEventListener("change", async (event) => {
+  //     const selectedEpisodeId = parseInt(event.target.value);
+  //     if (selectedEpisodeId) {
+  //       const episodes = await fetchEpisodes(selectedEpisodeId);
+  //       createEpisodesDiv(episodes);
+  //     } else {
+  //       createShowDiv(allShows);
+  //     }
+  //   });
+
+  //   return episodeSelect;
+  // };
+
+  // const createEpisodeSelect = (episodes) => {
+  //   const episodeSelect = document.createElement("select");
+  //   episodeSelect.id = "episode-select";
+  //   //
+  //   //
+  //   episodeSelect.innerHTML = `<option value="">Select an Episode</option>`;
+  //   episodes.forEach((episode) => {
+  //     const option = document.createElement("option");
+  //     const episodeNumber = `S${formatSeriesNumber(episode.season)}E${formatSeriesNumber(episode.number)}`;
+  //     option.value = episodeNumber;
+  //     option.textContent = `${episode.name} - ${episodeNumber}`;
+  //     episodeSelect.appendChild(option);
+  //   });
+  //   // episodes.forEach((episode) => {
+  //   //   let option = document.createElement("option");
+  //   //   console.log(`S${formatSeriesNumber(episode.season)}E${formatSeriesNumber(episode.number)}`);
+  //   //   option.setAttribute("value", `S${formatSeriesNumber(episode.season)}E${formatSeriesNumber(episode.number)}`);
+  //   //   option.innerHTML = `${episode.name} - S${formatSeriesNumber(episode.season)}E${formatSeriesNumber(episode.number)}`;
+  //   //   episodeSelect.append(option);
+  //   // });
+  //   //
+  //   //
+
+  //   // episodeSelect.innerHTML = `<option value="">Select an Episode</option>`;
+  //   // episodes.forEach((episode) => {
+  //   //   console.log(`${episode.name}`);
+  //   //   episodeSelect.innerHTML += `${episode.name}`;
+  //   //   episodeSelect.innerHTML += `<option value="">S${episode.season.toString().padStart(2, "0")}E${episode.number.toString().padStart(2, "0")}</option>`;
+
+  //   // episodeSelect.innerHTML += `<option value="${episode.id}">${episode.name}</option>`;
+  //   // });
+
+  //   episodeSelect.addEventListener("change", async (event) => {
+  //     const selectedEpisodeId = parseInt(event.target.value);
+  //     if (selectedEpisodeId) {
+  //       const episodes = await fetchEpisodes(selectedEpisodeId);
+  //       createEpisodesDiv(episodes);
+  //     } else {
+  //       createShowDiv(allShows, showSelect);
+  //     }
+  //   });
+
+  //   return episodeSelect;
+  // };
   // back button to go back to all shows
   function createBackButton() {
     const resetButton = document.createElement("button");
     resetButton.id = "resetSelectionButton";
     resetButton.textContent = "All Shows";
     resetButton.addEventListener("click", () => {
-      createShowDiv(allShows, showSelect, 1);
+      createShowDiv(allShows);
     });
     return resetButton;
   }
@@ -119,12 +226,14 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchInputShows = createSearchInput(); // search input for shows
     const searchInputEpisodes = searchBarEpisodes(); // search input for episodes
     const showSelect = createShowSelect(allShows); // dropdown menu for shows
+    const episodeSelect = createEpisodeSelect(currentEpisodes); // dropdown menu for Episodes
     const backSelect = createBackButton(); // back button to go back to all shows
 
     navigation.appendChild(searchInputShows);
     navigation.appendChild(searchInputEpisodes);
     navigation.appendChild(backSelect);
     navigation.appendChild(showSelect);
+    navigation.appendChild(episodeSelect);
 
     return navigation;
   };
@@ -171,7 +280,7 @@ document.addEventListener("DOMContentLoaded", function () {
   //___________________________________________________________________________________________________________________________________________
 
   //------------------------------------------------------------------------------------------------------------------------------------------
-  //                                                                                                          BELOW IS Pagination
+  //                                                                                                          BELOW IS EXTRA UTILITIES
   //___________________________________________________________________________________________________________________________________________
 
   // Create pagination Element
@@ -189,7 +298,7 @@ document.addEventListener("DOMContentLoaded", function () {
   //                                                                                                          BELOW IS Displaying Shows
   //___________________________________________________________________________________________________________________________________________
 
-  const createShowDiv = (shows, showSelect, page) => {
+  const createShowDiv = (shows) => {
     // if there are any episodes cards they would be removed
     const episodesListing = document.getElementById("episodeslisting");
     if (episodesListing) {
@@ -247,7 +356,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         showCard.addEventListener("click", async () => {
           const episodes = await fetchEpisodes(show.id);
-          createEpisodesDiv(episodes, 1);
+          createEpisodesDiv(episodes);
         });
 
         document.getElementById("showslisting").appendChild(showCard);
@@ -283,7 +392,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("pagination").style.color = "magenta";
       pagination.appendChild(pageLink);
     }
-    showSelect.value = "";
+    // showSelect.value = "";
   };
 
   //------------------------------------------------------------------------------------------------------------------------------------------
@@ -294,7 +403,8 @@ document.addEventListener("DOMContentLoaded", function () {
   //                                                                                                          BELOW IS Displaying Episodes
   //___________________________________________________________________________________________________________________________________________
 
-  const createEpisodesDiv = (episodes, page) => {
+  const createEpisodesDiv = (episodes) => {
+    createEpisodeSelect(currentEpisodes);
     try {
       // clear all the old display elements
       showslisting.innerHTML = "";
@@ -426,12 +536,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const executeFetch = async () => {
     try {
       allShows = await sortShowsByName();
-      createShowDiv(allShows, showSelect, 1);
+      createShowDiv(allShows);
       rootElement.prepend(createNavigation());
     } catch (error) {
       console.error("Error executing fetch:", error);
     }
   };
-  const showSelect = createShowSelect(allShows);
   executeFetch();
 });
