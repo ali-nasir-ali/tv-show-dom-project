@@ -389,7 +389,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })(pageNum)
       );
       // display shows search bar
-      document.getElementById("pagination").style.color = "magenta";
+      // document.getElementById("pagination").style.color = "magenta";
       pagination.appendChild(pageLink);
     }
     // showSelect.value = "";
@@ -404,7 +404,7 @@ document.addEventListener("DOMContentLoaded", function () {
   //___________________________________________________________________________________________________________________________________________
 
   const createEpisodesDiv = (episodes) => {
-    createEpisodeSelect(currentEpisodes);
+    // createEpisodeSelect(currentEpisodes);
     try {
       // clear all the old display elements
       showslisting.innerHTML = "";
@@ -497,7 +497,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })(pageNum)
       );
       // display shows search bar
-      document.getElementById("pagination").style.color = "magenta";
+      // document.getElementById("pagination").style.color = "magenta";
       pagination.appendChild(pageLink);
     }
   };
