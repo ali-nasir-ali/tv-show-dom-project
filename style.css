@@ -132,7 +132,7 @@ mark {
   line-height: 1.4;
 }
 
-.navigation {
+#navigation {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -140,7 +140,7 @@ mark {
   margin-left: 10px;
 }
 
-.navigation > * {
+#navigation > * {
   border: 1px solid #ccc;
   padding: 6px 12px;
   border-radius: 4px;
@@ -158,7 +158,7 @@ mark {
 input#searchInputShows,
 input#searchInputEpisodes,
 select#show-select,
-select#episode-select,
+select#episodeSelect,
 #resetSelectionButton {
   flex: 1;
   max-width: 49%;
