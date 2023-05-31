@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
     searchInput.addEventListener("input", () => {
       const searchTerm = searchInput.value;
       const filteredShows = searchShows(searchTerm, allShows);
-      createShowDiv(filteredShows);
+      createShowDiv(filteredShows, showSelect);
     });
 
     return searchInput;
@@ -94,18 +94,18 @@ document.addEventListener("DOMContentLoaded", function () {
       showSelect.innerHTML += `<option value="${show.id}">${show.name}</option>`;
     });
 
-    showSelect.addEventListener("change", async (event) => {
-      const selectedShowId = parseInt(event.target.value);
-      if (selectedShowId) {
-        const episodes = await fetchEpisodes(selectedShowId);
-        createEpisodesDiv(episodes);
-      } else {
-        // remove the old pagination
-        const paginationElement = document.getElementById("pagination");
-        paginationElement.remove();
-        createShowDiv(allShows);
-      }
-    });
+    // showSelect.addEventListener("change", async (event) => {
+    //   const selectedShowId = parseInt(event.target.value);
+    //   if (selectedShowId) {
+    //     const episodes = await fetchEpisodes(selectedShowId);
+    //     createEpisodesDiv(episodes);
+    //   } else {
+    //     // remove the old pagination
+    //     const paginationElement = document.getElementById("pagination");
+    //     paginationElement.remove();
+    //     createShowDiv(allShows, showSelect);
+    //   }
+    // });
 
     return showSelect;
   };
@@ -130,8 +130,6 @@ document.addEventListener("DOMContentLoaded", function () {
       if (selectedShowId) {
         const episodes = await fetchEpisodes(selectedShowId);
         createEpisodesDiv(episodes);
-      } else {
-        createShowDiv(allShows);
       }
     });
     const navigation = document.getElementById("navigation");
@@ -147,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
       // remove the episodes DropDown Menu
       const episodesDropDownMenu = document.getElementById("episodeSelect");
       episodesDropDownMenu.remove();
-      createShowDiv(allShows);
+      createShowDiv(allShows, showSelect);
     });
 
     return resetButton;
@@ -227,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
   //                                                                                                          BELOW IS Displaying Shows
   //___________________________________________________________________________________________________________________________________________
 
-  const createShowDiv = (shows) => {
+  const createShowDiv = (shows, showSelect) => {
     // if there are any episodes cards they would be removed
     const episodesListing = document.getElementById("episodeslisting");
     if (episodesListing) {
@@ -321,6 +319,7 @@ document.addEventListener("DOMContentLoaded", function () {
       );
       pagination.appendChild(pageLink);
     }
+    showSelect.value = "";
   };
 
   //------------------------------------------------------------------------------------------------------------------------------------------
@@ -464,10 +463,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const executeFetch = async () => {
     try {
       allShows = await sortShowsByName();
-      createShowDiv(allShows);
+      createShowDiv(allShows, showSelect);
     } catch (error) {
       console.error("Error executing fetch:", error);
     }
   };
+  const showSelect = createShowSelect(allShows);
   executeFetch();
 });
