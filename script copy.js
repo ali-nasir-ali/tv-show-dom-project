@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
     searchInput.addEventListener("input", () => {
       const searchTerm = searchInput.value;
       const filteredShows = searchShows(searchTerm, allShows);
-      createShowDiv(filteredShows, showSelect);
+      createShowDiv(filteredShows);
     });
 
     return searchInput;
@@ -94,47 +94,65 @@ document.addEventListener("DOMContentLoaded", function () {
       showSelect.innerHTML += `<option value="${show.id}">${show.name}</option>`;
     });
 
-    // showSelect.addEventListener("change", async (event) => {
-    //   const selectedShowId = parseInt(event.target.value);
-    //   if (selectedShowId) {
-    //     const episodes = await fetchEpisodes(selectedShowId);
-    //     createEpisodesDiv(episodes);
-    //   } else {
-    //     // remove the old pagination
-    //     const paginationElement = document.getElementById("pagination");
-    //     paginationElement.remove();
-    //     createShowDiv(allShows, showSelect);
-    //   }
-    // });
+    showSelect.addEventListener("change", async (event) => {
+      const selectedShowId = parseInt(event.target.value);
+      if (selectedShowId) {
+        const episodes = await fetchEpisodes(selectedShowId);
+        createEpisodesDiv(episodes);
+      } else {
+        createShowDiv(allShows);
+      }
+    });
 
     return showSelect;
   };
-
+  // function formatSeriesNumber(number) {
+  //   return number < 10 ? "0" + number : number;
+  // }
   //
   function createEpisodeSelect(allEpisodes) {
-    const episodesDropDownMenu = document.getElementById("episodeSelect");
-    if (episodesDropDownMenu) {
-      // remove the episodes DropDown Menu
-      episodesDropDownMenu.remove();
-    }
     const showSelect = document.createElement("select");
-    showSelect.id = "episodeSelect";
-    showSelect.innerHTML = `<option value="">Select a Episodes</option>`;
-    allEpisodes.forEach((episode) => {
-      showSelect.innerHTML += `<option value="${episode.id}">S${episode.season.toString().padStart(2, "0")}E${episode.number.toString().padStart(2, "0")} - ${
-        episode.name
-      }</option>`;
+    showSelect.id = "episode-select";
+    showSelect.innerHTML = `<option value="">Select a show</option>`;
+    allEpisodes.forEach((show) => {
+      console.log(`${show.id}`);
+      showSelect.innerHTML += `<option value="${show.id}">${show.name}</option>`;
     });
     showSelect.addEventListener("change", async (event) => {
       const selectedShowId = parseInt(event.target.value);
       if (selectedShowId) {
         const episodes = await fetchEpisodes(selectedShowId);
         createEpisodesDiv(episodes);
+      } else {
+        createShowDiv(allShows);
       }
     });
     const navigation = document.getElementById("navigation");
     navigation.appendChild(showSelect);
   }
+
+  // const createEpisodeSelect = (episodes) => {
+  //   const episodeSelect = document.createElement("select");
+  //   episodeSelect.id = "episode-select";
+  //   //
+  //   //
+  //   episodeSelect.innerHTML = `<option value="">Select an Episode</option>`;
+  //   episodes.forEach((episode) => {
+  //     const option = document.createElement("option");
+  //     const episodeNumber = `S${formatSeriesNumber(episode.season)}E${formatSeriesNumber(episode.number)}`;
+  //     option.value = episodeNumber;
+  //     option.textContent = `${episode.name} - ${episodeNumber}`;
+  //     episodeSelect.appendChild(option);
+  //   });
+  //   // episodes.forEach((episode) => {
+  //   //   let option = document.createElement("option");
+  //   //   console.log(`S${formatSeriesNumber(episode.season)}E${formatSeriesNumber(episode.number)}`);
+  //   //   option.setAttribute("value", `S${formatSeriesNumber(episode.season)}E${formatSeriesNumber(episode.number)}`);
+  //   //   option.innerHTML = `${episode.name} - S${formatSeriesNumber(episode.season)}E${formatSeriesNumber(episode.number)}`;
+  //   //   episodeSelect.append(option);
+  //   // });
+  //   //
+  //   //
 
   // back button to go back to all shows
   function createBackButton() {
@@ -142,25 +160,27 @@ document.addEventListener("DOMContentLoaded", function () {
     resetButton.id = "resetSelectionButton";
     resetButton.textContent = "All Shows";
     resetButton.addEventListener("click", () => {
-      // remove the episodes DropDown Menu
-      const episodesDropDownMenu = document.getElementById("episodeSelect");
-      episodesDropDownMenu.remove();
-      createShowDiv(allShows, showSelect);
+      createShowDiv(allShows);
     });
-
     return resetButton;
   }
   // putting all the navigation elements to the root element
   const createNavigation = () => {
+    //   const navigation = document.createElement("div");
+    //   navigation.setAttribute("id", "navigation");
+
     const searchInputShows = createSearchInput(); // search input for shows
     const searchInputEpisodes = searchBarEpisodes(); // search input for episodes
     const showSelect = createShowSelect(allShows); // dropdown menu for shows
+    createEpisodeSelect(currentEpisodes); // dropdown menu for Episodes
     const backSelect = createBackButton(); // back button to go back to all shows
 
     navigation.appendChild(searchInputShows);
     navigation.appendChild(searchInputEpisodes);
     navigation.appendChild(backSelect);
     navigation.appendChild(showSelect);
+
+    // navigation.appendChild(episodeSelect);
 
     return navigation;
   };
@@ -225,7 +245,7 @@ document.addEventListener("DOMContentLoaded", function () {
   //                                                                                                          BELOW IS Displaying Shows
   //___________________________________________________________________________________________________________________________________________
 
-  const createShowDiv = (shows, showSelect) => {
+  const createShowDiv = (shows) => {
     // if there are any episodes cards they would be removed
     const episodesListing = document.getElementById("episodeslisting");
     if (episodesListing) {
@@ -239,8 +259,6 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("searchInputEpisodes").style.display = "none";
       // display shows search bar
       document.getElementById("searchInputShows").style.display = "block";
-      // add shows drop down bar
-      document.getElementById("show-select").style.display = "block";
     }
 
     //
@@ -317,9 +335,11 @@ document.addEventListener("DOMContentLoaded", function () {
           };
         })(pageNum)
       );
+      // display shows search bar
+      // document.getElementById("pagination").style.color = "magenta";
       pagination.appendChild(pageLink);
     }
-    showSelect.value = "";
+    // showSelect.value = "";
   };
 
   //------------------------------------------------------------------------------------------------------------------------------------------
@@ -342,10 +362,8 @@ document.addEventListener("DOMContentLoaded", function () {
       // if there are any episodes cards they would be removed
       const showsSearchBar = document.getElementById("searchInputShows");
       if (showsSearchBar) {
-        // remove shows search bar
+        // remove episode search bar
         document.getElementById("searchInputShows").style.display = "none";
-        // remove shows drop down bar
-        document.getElementById("show-select").style.display = "none";
       }
 
       // remove the old pagination
@@ -425,6 +443,8 @@ document.addEventListener("DOMContentLoaded", function () {
           };
         })(pageNum)
       );
+      // display shows search bar
+      // document.getElementById("pagination").style.color = "magenta";
       pagination.appendChild(pageLink);
     }
   };
@@ -463,11 +483,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const executeFetch = async () => {
     try {
       allShows = await sortShowsByName();
-      createShowDiv(allShows, showSelect);
+      createShowDiv(allShows);
     } catch (error) {
       console.error("Error executing fetch:", error);
     }
   };
-  const showSelect = createShowSelect(allShows);
   executeFetch();
 });
